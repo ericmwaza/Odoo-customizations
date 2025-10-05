@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Hide the default Budget Report menu from account_budget module -->
+    <record id="account_budget.budget_report_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

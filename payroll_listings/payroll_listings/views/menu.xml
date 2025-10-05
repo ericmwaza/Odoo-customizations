@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem
+        id="menu_payroll_listings_root"
+        name="Listings"
+        parent="hr_work_entry_contract_enterprise.menu_hr_payroll_root"
+        sequence="95"
+        action="action_payroll_listings_placeholder"
+    />
+
+    <!-- Contribution Bank Config -->
+    <menuitem id="menu_contribution_bank_config" 
+              name="Contribution Banks" 
+              parent="hr_work_entry_contract_enterprise.menu_hr_payroll_root" 
+              action="action_contribution_bank_config" 
+              sequence="97"/>
+</odoo>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Caisse Request Type Form View -->
+    <record id="view_caisse_request_type_form" model="ir.ui.view">
+        <field name="name">caisse.request.type.form</field>
+        <field name="model">caisse.request.type</field>
+        <field name="arch" type="xml">
+            <form string="Type de Demande">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" nolabel="1" placeholder="Description du type de demande..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Caisse Request Type Tree View -->
+    <record id="view_caisse_request_type_tree" model="ir.ui.view">
+        <field name="name">caisse.request.type.tree</field>
+        <field name="model">caisse.request.type</field>
+        <field name="arch" type="xml">
+            <list string="Types de Demande" default_order="sequence">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_caisse_request_type" model="ir.actions.act_window">
+        <field name="name">Types de Demande</field>
+        <field name="res_model">caisse.request.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez un nouveau type de demande
+            </p>
+            <p>
+                Les types de demande permettent de catégoriser les différentes demandes de fonds.
+            </p>
+        </field>
+    </record>
+
+</odoo>

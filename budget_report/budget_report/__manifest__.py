@@ -1,0 +1,25 @@
+{
+    'name': 'Budget Report',
+    'version': '18.0.1.0.0',
+    'summary': 'Budget Execution and Receipt Report with PDF/Excel Export',
+    'author': 'By Eric Mwaza (contact at ericmwaza@gmail.com)',
+    'category': 'Accounting/Accounting',
+    'depends': [
+        'account',
+        'analytic',
+        'account_budget',
+    ],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/budget_report_config_views.xml',
+        'views/budget_report_wizard_views.xml',
+        'reports/budget_report_pdf.xml',
+        'reports/budget_reports.xml',
+        'views/budget_report_menus.xml',
+        'views/hide_default_budget_menu.xml',
+    ],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+    'license': 'LGPL-3',
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add fields to Settings → Accounting -->
+    <record id="res_config_settings_view_form_inherit_budget_report" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.budget.report</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div id="analytic_accounting" position="after">
+                <h2>Configuration Rapport Budget</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="budget_encaissement_account_ids" string="Comptes Analytiques Encaissement"/>
+                            <div class="text-muted">
+                                Sélectionnez les comptes analytiques représentant les encaissements
+                            </div>
+                            <field name="budget_encaissement_account_ids" widget="many2many_tags"/>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="budget_execution_account_ids" string="Comptes Analytiques Exécution"/>
+                            <div class="text-muted">
+                                Sélectionnez les comptes analytiques représentant les exécutions (dépenses)
+                            </div>
+                            <field name="budget_execution_account_ids" widget="many2many_tags"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+</odoo>

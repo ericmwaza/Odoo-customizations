@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Caisse Report Wizard Form -->
+    <record id="view_caisse_report_wizard_form" model="ir.ui.view">
+        <field name="name">caisse.report.wizard.form</field>
+        <field name="model">caisse.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generer un Rapport">
+                <group>
+                    <group>
+                        <field name="report_type"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print_report" string="Imprimer" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_caisse_report_wizard" model="ir.actions.act_window">
+        <field name="name">Rapports Caisse</field>
+        <field name="res_model">caisse.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_caisse_config"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu: Accounting → Reports → Budget Report -->
+    <menuitem
+        id="menu_budget_report"
+        name="Rapport Budget"
+        parent="account.menu_finance_reports"
+        action="action_budget_report_wizard"
+        sequence="100"/>
+</odoo>

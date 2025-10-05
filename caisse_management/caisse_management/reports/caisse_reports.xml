@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Rapport Résumé Caisse -->
+    <record id="action_report_caisse_summary" model="ir.actions.report">
+        <field name="name">Rapport Résumé Caisse</field>
+        <field name="model">caisse.config</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">caisse_management.report_caisse_summary</field>
+        <field name="report_file">caisse_management.report_caisse_summary</field>
+        <field name="print_report_name">'Résumé Caisse - %s' % (object.name)</field>
+    </record>
+
+    <!-- Rapport Décaissements -->
+    <record id="action_report_disbursements" model="ir.actions.report">
+        <field name="name">Rapport Décaissements</field>
+        <field name="model">caisse.disbursement</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">caisse_management.report_disbursements</field>
+        <field name="report_file">caisse_management.report_disbursements</field>
+        <field name="print_report_name">'Décaissement - %s' % (object.name)</field>
+    </record>
+
+    <!-- Rapport Réconciliation -->
+    <record id="action_report_reconciliation" model="ir.actions.report">
+        <field name="name">Rapport Réconciliation</field>
+        <field name="model">caisse.reconciliation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">caisse_management.report_reconciliation</field>
+        <field name="report_file">caisse_management.report_reconciliation</field>
+        <field name="print_report_name">'Réconciliation - %s' % (object.name)</field>
+    </record>
+
+    <!-- Rapport Avances en Cours -->
+    <record id="action_report_outstanding_advances" model="ir.actions.report">
+        <field name="name">Rapport Avances en Cours</field>
+        <field name="model">caisse.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">caisse_management.report_outstanding_advances</field>
+        <field name="report_file">caisse_management.report_outstanding_advances</field>
+        <field name="print_report_name">'Avances en Cours - %s' % (time.strftime('%Y-%m-%d'))</field>
+    </record>
+
+    <!-- Report Templates -->
+
+    <!-- Modèle Rapport Résumé Caisse - Using Python PDF Generator (see reports/caisse_pdf_report.py) -->
+
+    <!-- Modèle Rapport Décaissements -->
+    <template id="report_disbursements">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="page" style="font-family: Arial, sans-serif;">
+
+                    <!-- Company Header -->
+                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #0066cc; padding-bottom: 20px;">
+                        <h2 style="margin: 0; color: #333;"><t t-esc="o.company_id.name"/></h2>
+                        <p style="margin: 5px 0; color: #666;">
+                            <t t-esc="o.company_id.street"/>, <t t-esc="o.company_id.city"/>
+                        </p>
+                    </div>
+
+                    <!-- Report Title -->
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #0066cc; margin: 10px 0;">Bon de Décaissement</h1>
+                        <p style="color: #666;">Généré le <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/></p>
+                    </div>
+
+                    <!-- Disbursement Details -->
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; border: 2px solid #333;">
+                        <tr style="background-color: #0066cc;">
+                            <th colspan="2" style="padding: 10px; color: white; text-align: left; border: 1px solid #333;">
+                                <strong>Détails du Décaissement</strong>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #333; background-color: #f0f0f0; width: 30%;"><strong>Référence:</strong></td>
+                            <td style="padding: 8px; border: 1px solid #333;"><t t-esc="o.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #333; background-color: #f0f0f0;"><strong>Date de Décaissement:</strong></td>
+                            <td style="padding: 8px; border: 1px solid #333;"><t t-esc="o.disbursement_date.strftime('%d/%m/%Y %H:%M') if o.disbursement_date else ''"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #333; background-color: #f0f0f0;"><strong>Employé:</strong></td>
+                            <td style="padding: 8px; border: 1px solid #333;"><t t-esc="o.employee_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #333; background-color: #f0f0f0;"><strong>Description:</strong></td>
+                            <td style="padding: 8px; border: 1px solid #333;"><t t-esc="o.description"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #333; background-color: #f0f0f0;"><strong>Montant:</strong></td>
+                            <td style="padding: 8px; border: 1px solid #333;">
+                                <strong style="color: #28a745; font-size: 18px;"><t t-esc="'{:,.2f}'.format(o.amount)"/> <t t-esc="o.currency_id.name"/></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #333; background-color: #f0f0f0;"><strong>Mode de Paiement:</strong></td>
+                            <td style="padding: 8px; border: 1px solid #333;">
+                                <t t-if="o.payment_method == 'cash'">Espèces</t>
+                                <t t-elif="o.payment_method == 'bank_transfer'">Virement Bancaire</t>
+                                <t t-elif="o.payment_method == 'check'">Chèque</t>
+                                <t t-else=""><t t-esc="o.payment_method"/></t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #333; background-color: #f0f0f0;"><strong>Caissier:</strong></td>
+                            <td style="padding: 8px; border: 1px solid #333;"><t t-esc="o.cashier_id.name if o.cashier_id else ''"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #333; background-color: #f0f0f0;"><strong>Statut:</strong></td>
+                            <td style="padding: 8px; border: 1px solid #333;">
+                                <t t-if="o.state == 'draft'">Brouillon</t>
+                                <t t-elif="o.state == 'disbursed'">Décaissé</t>
+                                <t t-elif="o.state == 'cancelled'">Annulé</t>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Notes if any -->
+                    <t t-if="o.notes">
+                        <h3 style="background-color: #17a2b8; color: white; padding: 10px; margin: 20px 0 10px 0;">Notes</h3>
+                        <div style="padding: 15px; border: 2px solid #333; margin-bottom: 30px;">
+                            <t t-esc="o.notes"/>
+                        </div>
+                    </t>
+
+                    <!-- Signature Section -->
+                    <div style="margin-top: 80px;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 50%; text-align: center; padding: 20px;">
+                                    <div style="border-top: 2px solid #000; display: inline-block; width: 250px; padding-top: 10px;">
+                                        <strong>Signature du Caissier</strong>
+                                    </div>
+                                </td>
+                                <td style="width: 50%; text-align: center; padding: 20px;">
+                                    <div style="border-top: 2px solid #000; display: inline-block; width: 250px; padding-top: 10px;">
+                                        <strong>Signature du Bénéficiaire</strong>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Modèle Liste des Décaissements (Alternative) -->
+    <template id="report_disbursements_list">
+        <t t-call="web.html_container">
+            <div class="page">
+                <div class="oe_structure"/>
+
+                    <div class="row mb-3">
+                        <div class="col-12 text-center">
+                            <h2 class="text-primary"><strong>Liste des Décaissements</strong></h2>
+                            <p class="text-muted">Généré le <span t-esc="datetime.datetime.now().strftime('%d %B %Y')"/></p>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <t t-set="all_disbursements" t-value="docs"/>
+
+                            <t t-if="all_disbursements">
+                                <h4 class="bg-primary text-white p-2"><i class="fa fa-list"/> Décaissements</h4>
+                                <table class="table table-sm table-bordered" style="border: 2px solid #dee2e6;">
+                                    <thead style="background-color: #e9ecef;">
+                                        <tr>
+                                            <th style="border: 1px solid #dee2e6;"><strong>Référence</strong></th>
+                                            <th style="border: 1px solid #dee2e6;"><strong>Date</strong></th>
+                                            <th style="border: 1px solid #dee2e6;"><strong>Employé</strong></th>
+                                            <th style="border: 1px solid #dee2e6;"><strong>Description</strong></th>
+                                            <th class="text-end" style="border: 1px solid #dee2e6;"><strong>Montant</strong></th>
+                                            <th style="border: 1px solid #dee2e6;"><strong>Mode Paiement</strong></th>
+                                            <th style="border: 1px solid #dee2e6;"><strong>Statut</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="all_disbursements" t-as="disbursement">
+                                            <tr>
+                                                <td><span t-esc="disbursement.name or 'N/A'"/></td>
+                                                <td><span t-esc="disbursement.disbursement_date.strftime('%d/%m/%Y %H:%M') if disbursement.disbursement_date else 'N/A'"/></td>
+                                                <td><span t-esc="disbursement.employee_id.name if disbursement.employee_id else 'N/A'"/></td>
+                                                <td><span t-esc="disbursement.description or 'N/A'"/></td>
+                                                <td class="text-end">
+                                                    <strong>
+                                                        <span t-esc="'{:,.2f}'.format(disbursement.amount or 0)"/>
+                                                        <span t-esc="disbursement.currency_id.name if disbursement.currency_id else 'EUR'"/>
+                                                    </strong>
+                                                </td>
+                                                <td>
+                                                    <t t-if="disbursement.payment_method == 'cash'">Espèces</t>
+                                                    <t t-elif="disbursement.payment_method == 'bank_transfer'">Virement</t>
+                                                    <t t-elif="disbursement.payment_method == 'check'">Chèque</t>
+                                                    <t t-else=""><span t-esc="disbursement.payment_method or 'N/A'"/></t>
+                                                </td>
+                                                <td><span t-esc="disbursement.cashier_id.name if disbursement.cashier_id else 'N/A'"/></td>
+                                                <td>
+                                                    <t t-if="disbursement.state == 'draft'">
+                                                        <span class="badge bg-secondary">Brouillon</span>
+                                                    </t>
+                                                    <t t-elif="disbursement.state == 'disbursed'">
+                                                        <span class="badge bg-success">Décaissé</span>
+                                                    </t>
+                                                    <t t-elif="disbursement.state == 'cancelled'">
+                                                        <span class="badge bg-danger">Annulé</span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span class="badge bg-light"><span t-esc="disbursement.state or 'N/A'"/></span>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <th colspan="4" class="text-end">Total:</th>
+                                            <th class="text-end">
+                                                <t t-set="total_amount" t-value="sum(d.amount or 0 for d in all_disbursements)"/>
+                                                <strong>
+                                                    <span t-esc="'{:,.2f}'.format(total_amount)"/>
+                                                    <span t-esc="all_disbursements[0].currency_id.name if all_disbursements and all_disbursements[0].currency_id else 'EUR'"/>
+                                                </strong>
+                                            </th>
+                                            <th colspan="3"></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </t>
+                            <t t-else="">
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle"/>
+                                    <strong>Aucun décaissement trouvé.</strong>
+                                    <p>Il n'y a aucun décaissement à afficher pour la période sélectionnée.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                <div class="oe_structure"/>
+            </div>
+        </t>
+    </template>
+
+    <!-- Modèle Rapport Réconciliation -->
+    <template id="report_reconciliation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <div class="page" style="font-family: Arial, sans-serif;">
+
+                    <!-- Company Header -->
+                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #0066cc; padding-bottom: 20px;">
+                        <h2 style="margin: 0; color: #333;"><t t-esc="o.company_id.name"/></h2>
+                        <p style="margin: 5px 0; color: #666;">
+                            <t t-esc="o.company_id.street"/>, <t t-esc="o.company_id.city"/>
+                        </p>
+                    </div>
+
+                    <!-- Report Title -->
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #0066cc; margin: 10px 0;">Rapport de Reconciliation de Caisse</h1>
+                        <h3 style="color: #666;"><t t-esc="o.name"/></h3>
+                        <p style="color: #666;">Periode: <t t-esc="o.period_from.strftime('%d/%m/%Y') if o.period_from else ''"/> au <t t-esc="o.period_to.strftime('%d/%m/%Y') if o.period_to else ''"/></p>
+                        <p style="color: #666;">Genere le <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y %H:%M')"/></p>
+                    </div>
+
+                        <div class="row mt32">
+                            <div class="col-6">
+                                <h4>Détails de la Réconciliation</h4>
+                                <table class="table table-sm table-bordered">
+                                    <tr>
+                                        <td><strong>Type:</strong></td>
+                                        <td>
+                                            <t t-if="doc and doc.reconciliation_type == 'daily'">
+                                                <span class="badge bg-primary">Journalière</span>
+                                            </t>
+                                            <t t-elif="doc and doc.reconciliation_type == 'weekly'">
+                                                <span class="badge bg-info">Hebdomadaire</span>
+                                            </t>
+                                            <t t-elif="doc and doc.reconciliation_type == 'monthly'">
+                                                <span class="badge bg-success">Mensuelle</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge bg-secondary"><span t-esc="doc.reconciliation_type if doc and doc.reconciliation_type else 'N/A'"/></span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Date:</strong></td>
+                                        <td><span t-esc="doc.reconciliation_date.strftime('%d/%m/%Y') if doc and doc.reconciliation_date else 'N/A'"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Caissier:</strong></td>
+                                        <td><span t-esc="doc.cashier_id.name if doc and doc.cashier_id else 'N/A'"/></td>
+                                    </tr>
+                                    <tr t-if="doc and doc.supervisor_id">
+                                        <td><strong>Superviseur:</strong></td>
+                                        <td><span t-esc="doc.supervisor_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Statut:</strong></td>
+                                        <td>
+                                            <t t-if="doc and doc.state == 'draft'">
+                                                <span class="badge bg-secondary">Brouillon</span>
+                                            </t>
+                                            <t t-elif="doc and doc.state == 'validated'">
+                                                <span class="badge bg-success">Validé</span>
+                                            </t>
+                                            <t t-elif="doc and doc.state == 'cancelled'">
+                                                <span class="badge bg-danger">Annulé</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge bg-light"><span t-esc="doc.state if doc and doc.state else 'N/A'"/></span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <h4>Résumé des Soldes</h4>
+                                <table class="table table-sm table-bordered">
+                                    <tr>
+                                        <td><strong>Solde d'Ouverture:</strong></td>
+                                        <td class="text-end">
+                                            <span t-esc="'{:,.2f}'.format(doc.opening_balance if doc and doc.opening_balance else 0)"/>
+                                            <span t-esc="doc.company_id.currency_id.name if doc and doc.company_id and doc.company_id.currency_id else 'EUR'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total Décaissements:</strong></td>
+                                        <td class="text-danger text-end">
+                                            -<span t-esc="'{:,.2f}'.format(doc.total_disbursements if doc and doc.total_disbursements else 0)"/>
+                                            <span t-esc="doc.company_id.currency_id.name if doc and doc.company_id and doc.company_id.currency_id else 'EUR'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total Recettes:</strong></td>
+                                        <td class="text-success text-end">
+                                            +<span t-esc="'{:,.2f}'.format(doc.total_receipts if doc and doc.total_receipts else 0)"/>
+                                            <span t-esc="doc.company_id.currency_id.name if doc and doc.company_id and doc.company_id.currency_id else 'EUR'"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-secondary">
+                                        <td><strong>Solde Calculé:</strong></td>
+                                        <td class="text-end">
+                                            <strong>
+                                                <span t-esc="'{:,.2f}'.format(doc.calculated_balance if doc and doc.calculated_balance else 0)"/>
+                                                <span t-esc="doc.company_id.currency_id.name if doc and doc.company_id and doc.company_id.currency_id else 'EUR'"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-info">
+                                        <td><strong>Solde Réel:</strong></td>
+                                        <td class="text-end">
+                                            <strong>
+                                                <span t-esc="'{:,.2f}'.format(doc.actual_balance if doc and doc.actual_balance else 0)"/>
+                                                <span t-esc="doc.company_id.currency_id.name if doc and doc.company_id and doc.company_id.currency_id else 'EUR'"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr t-attf-class="#{doc and doc.variance and doc.variance != 0 and 'table-danger' or 'table-success'}">
+                                        <td><strong>Écart:</strong></td>
+                                        <td class="text-end">
+                                            <strong>
+                                                <span t-esc="'{:,.2f}'.format(doc.variance if doc and doc.variance else 0)"/>
+                                                <span t-esc="doc.company_id.currency_id.name if doc and doc.company_id and doc.company_id.currency_id else 'EUR'"/>
+                                                <t t-if="doc and doc.variance and doc.variance == 0">
+                                                    <i class="fa fa-check-circle text-success ml-2"/>
+                                                </t>
+                                                <t t-elif="doc and doc.variance and doc.variance != 0">
+                                                    <i class="fa fa-exclamation-triangle text-danger ml-2"/>
+                                                </t>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row mt32" t-if="doc and doc.denomination_line_ids">
+                            <div class="col-12">
+                                <h4>Dénominations de Billets/Pièces</h4>
+                                <table class="table table-striped table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Dénomination</th>
+                                            <th class="text-center">Quantité</th>
+                                            <th class="text-end">Sous-total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="doc.denomination_line_ids" t-as="line">
+                                            <tr>
+                                                <td>
+                                                    <strong>
+                                                        <span t-esc="'{:,.2f}'.format(line.denomination if line.denomination else 0)"/>
+                                                        <span t-esc="line.currency_id.name if line.currency_id else 'EUR'"/>
+                                                    </strong>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-primary"><span t-esc="line.quantity if line.quantity else 0"/></span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <strong>
+                                                        <span t-esc="'{:,.2f}'.format(line.subtotal if line.subtotal else 0)"/>
+                                                        <span t-esc="line.currency_id.name if line.currency_id else 'EUR'"/>
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <th>Total Comptage:</th>
+                                            <th class="text-center">
+                                                <span t-esc="sum(line.quantity or 0 for line in doc.denomination_line_ids)"/> unités
+                                            </th>
+                                            <th class="text-end">
+                                                <strong>
+                                                    <span t-esc="'{:,.2f}'.format(sum(line.subtotal or 0 for line in doc.denomination_line_ids))"/>
+                                                    <span t-esc="doc.denomination_line_ids[0].currency_id.name if doc.denomination_line_ids and doc.denomination_line_ids[0].currency_id else 'EUR'"/>
+                                                </strong>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row mt32" t-if="doc.reconciliation_notes or doc.variance_explanation">
+                            <div class="col-12">
+                                <h4>Notes</h4>
+                                <div t-if="doc.reconciliation_notes">
+                                    <strong>Notes de Réconciliation:</strong>
+                                    <p><span t-field="doc.reconciliation_notes"/></p>
+                                </div>
+                                <div t-if="doc.variance_explanation">
+                                    <strong>Explication de l'Écart:</strong>
+                                    <p><span t-field="doc.variance_explanation"/></p>
+                                </div>
+                            </div>
+                        </div>
+
+                    <div class="oe_structure"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Modèle Rapport Avances en Cours -->
+    <template id="report_outstanding_advances">
+        <t t-call="web.html_container">
+                <div class="page">
+                    <div class="oe_structure"/>
+
+                    <!-- Header Section -->
+                    <div class="row">
+                        <div class="col-12 text-center mb-4">
+                            <h1 class="text-primary">
+                                <i class="fa fa-exclamation-triangle text-warning"/>
+                                Rapport des Avances en Cours
+                            </h1>
+                            <h4 class="text-muted">État des avances non réglées</h4>
+                            <p class="lead">Généré le <span t-esc="datetime.datetime.now().strftime('%d %B %Y à %H:%M')"/></p>
+                        </div>
+                    </div>
+
+                    <!-- Data Processing -->
+                    <t t-set="all_advances" t-value="docs if docs else env['caisse.request'].search([('request_type', '=', 'advance'), ('state', '=', 'disbursed')], order='disbursement_date desc')"/>
+                    <t t-set="outstanding_advances" t-value="all_advances.filtered(lambda r: r.request_type == 'advance' and r.state == 'disbursed')"/>
+                    <t t-set="overdue_advances" t-value="outstanding_advances.filtered(lambda r: r.is_overdue)"/>
+                    <t t-set="urgent_advances" t-value="outstanding_advances.filtered(lambda r: not r.is_overdue and (r.days_to_settle or 0) &lt;= 7 and (r.days_to_settle or 0) &gt; 0)"/>
+                    <t t-set="total_outstanding" t-value="sum(advance.amount or 0 for advance in outstanding_advances)"/>
+
+                    <!-- Summary Cards -->
+                    <div class="row mb-4">
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <h4 class="card-title text-primary">
+                                        <i class="fa fa-list-ol"/>
+                                        Total Avances
+                                    </h4>
+                                    <h2 class="text-primary">
+                                        <span t-esc="len(outstanding_advances)"/>
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-danger">
+                                <div class="card-body text-center">
+                                    <h4 class="card-title text-danger">
+                                        <i class="fa fa-exclamation-circle"/>
+                                        En Retard
+                                    </h4>
+                                    <h2 class="text-danger">
+                                        <span t-esc="len(overdue_advances)"/>
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <h4 class="card-title text-warning">
+                                        <i class="fa fa-clock-o"/>
+                                        Urgentes (&lt;= 7j)
+                                    </h4>
+                                    <h2 class="text-warning">
+                                        <span t-esc="len(urgent_advances)"/>
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <h4 class="card-title text-success">
+                                        <i class="fa fa-money"/>
+                                        Montant Total
+                                    </h4>
+                                    <h2 class="text-success">
+                                        <span t-esc="'{:,.0f}'.format(total_outstanding)"/>
+                                        <small><span t-esc="outstanding_advances[0].currency_id.name if outstanding_advances and outstanding_advances[0].currency_id else 'EUR'"/></small>
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="row">
+                        <div class="col-12">
+
+                            <t t-if="outstanding_advances">
+                                <div class="mb-4">
+                                    <h3 class="text-primary">
+                                        <i class="fa fa-table"/>
+                                        Détail des Avances en Cours
+                                    </h3>
+                                    <p class="text-muted">Liste détaillée des avances non réglées</p>
+                                </div>
+
+                                <table class="table table-striped table-bordered">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Référence</th>
+                                            <th>Employé</th>
+                                            <th>Département</th>
+                                            <th>Date Décaissement</th>
+                                            <th>Montant</th>
+                                            <th>Échéance Règlement</th>
+                                            <th>Jours Restants</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="outstanding_advances" t-as="advance">
+                                            <tr t-attf-class="#{advance.is_overdue and 'table-danger' or ''}">
+                                                <td><span t-esc="advance.name or 'N/A'"/></td>
+                                                <td><span t-esc="advance.employee_id.name if advance.employee_id else 'N/A'"/></td>
+                                                <td><span t-esc="advance.employee_id.department_id.name if advance.employee_id and advance.employee_id.department_id else 'N/A'"/></td>
+                                                <td><span t-esc="advance.disbursement_date.strftime('%d/%m/%Y') if advance.disbursement_date else 'N/A'"/></td>
+                                                <td class="text-end">
+                                                    <strong>
+                                                        <span t-esc="'{:,.2f}'.format(advance.amount or 0)"/>
+                                                        <span t-esc="advance.currency_id.name if advance.currency_id else 'EUR'"/>
+                                                    </strong>
+                                                </td>
+                                                <td><span t-esc="advance.settlement_deadline.strftime('%d/%m/%Y') if advance.settlement_deadline else 'N/A'"/></td>
+                                                <td class="text-center">
+                                                    <span t-esc="advance.days_to_settle or 0"/>
+                                                    <t t-if="advance.is_overdue">
+                                                        <br/><span class="badge bg-danger">EN RETARD</span>
+                                                    </t>
+                                                    <t t-elif="(advance.days_to_settle or 0) &lt;= 7 and (advance.days_to_settle or 0) &gt; 0">
+                                                        <br/><span class="badge bg-warning">URGENT</span>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="advance.state == 'disbursed'">
+                                                        <span class="badge bg-warning">Décaissé</span>
+                                                    </t>
+                                                    <t t-elif="advance.state == 'settled'">
+                                                        <span class="badge bg-success">Réglé</span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span class="badge bg-light"><span t-esc="advance.state or 'N/A'"/></span>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot class="table-info">
+                                        <tr>
+                                            <th colspan="4" class="text-end">
+                                                <i class="fa fa-calculator"/>
+                                                Total en Cours:
+                                            </th>
+                                            <th class="text-end">
+                                                <strong class="text-success">
+                                                    <span t-esc="'{:,.2f}'.format(total_outstanding)"/>
+                                                    <span t-esc="outstanding_advances[0].currency_id.name if outstanding_advances and outstanding_advances[0].currency_id else 'EUR'"/>
+                                                </strong>
+                                            </th>
+                                            <th colspan="3" class="text-center">
+                                                <small class="text-muted">
+                                                    <i class="fa fa-info-circle"/>
+                                                    <span t-esc="len(outstanding_advances)"/> avance(s)
+                                                </small>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </t>
+                            <t t-else="">
+                                <div class="alert alert-success text-center py-5">
+                                    <div class="mb-3">
+                                        <i class="fa fa-check-circle" style="font-size: 48px;"/>
+                                    </div>
+                                    <h3 class="text-success">
+                                        <strong>Excellente nouvelle!</strong>
+                                    </h3>
+                                    <h5 class="text-muted">
+                                        Aucune avance en cours. Toutes les avances ont été réglées.
+                                    </h5>
+                                    <hr class="my-4"/>
+                                    <p class="text-muted">
+                                        <small>
+                                            <i class="fa fa-calendar"/>
+                                            Rapport généré le <span t-esc="datetime.datetime.now().strftime('%d/%m/%Y à %H:%M')"/>
+                                        </small>
+                                    </p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                <div class="oe_structure"/>
+            </div>
+        </t>
+    </template>
+
+</odoo>

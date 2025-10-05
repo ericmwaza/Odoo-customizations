@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_payroll_listing_wizard_form" model="ir.ui.view">
+        <field name="name">payroll.listing.wizard.form</field>
+        <field name="model">payroll.listing.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Options de liste de paie">
+                <sheet>
+                    <group>
+                        <field name="report_type" string="Type de rapport"/>
+                        <field name="output_type" string="Type de sortie"/>
+                    </group>
+                    <group string="Période">
+                        <field name="payslip_run_id" string="Lot de paie"/>
+                        <field name="date_from" string="Date de début"/>
+                        <field name="date_to" string="Date de fin"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_generate" string="Générer" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

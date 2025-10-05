@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="budget_report_pdf_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page" style="page-break-after: always;">
+                    <style>
+                        @page {
+                            size: A4 landscape;
+                            margin: 15mm;
+                        }
+                        .budget-report-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 10pt;
+                        }
+                        .budget-report-table th {
+                            background-color: #f0f0f0;
+                            border: 1px solid #333;
+                            padding: 8px;
+                            text-align: center;
+                            font-weight: bold;
+                        }
+                        .budget-report-table td {
+                            border: 1px solid #999;
+                            padding: 6px;
+                            text-align: right;
+                        }
+                        .budget-report-table td.text-left {
+                            text-align: left;
+                        }
+                        .budget-report-table tfoot td {
+                            background-color: #f0f0f0;
+                            font-weight: bold;
+                        }
+                        .report-header {
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }
+                        .report-info {
+                            margin-bottom: 15px;
+                        }
+                    </style>
+
+                    <div class="report-header">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                            <img t-if="report_data['company_logo']" t-att-src="'data:image/png;base64,%s' % report_data['company_logo'].decode('utf-8')" style="max-height: 80px; max-width: 200px;"/>
+                            <div style="flex: 1; text-align: center;">
+                                <h2>Rapport d'Exécution Budgétaire</h2>
+                                <h3><t t-esc="report_data['budget_name']"/></h3>
+                                <p>
+                                    Période: <t t-esc="report_data['date_from'].strftime('%d/%m/%Y')"/>
+                                    au <t t-esc="report_data['date_to'].strftime('%d/%m/%Y')"/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="budget-report-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">Rubriques budgétaires</th>
+                                <th style="width: 12%;">Crédit annuel accordé</th>
+                                <th style="width: 12%;">Encaissement</th>
+                                <th style="width: 12%;">Exécution</th>
+                                <th style="width: 14%;">Solde Théorique annuel à engager</th>
+                                <th style="width: 12%;">Solde Réel</th>
+                                <th style="width: 10%;">Taux de réalisation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="report_data['lines']" t-as="line">
+                                <tr>
+                                    <td class="text-left"><t t-esc="line['rubrique']"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(line['credit_annuel'])"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(line['encaissement'])"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(line['execution'])"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(line['solde_theorique'])"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(line['solde_reel'])"/></td>
+                                    <td><t t-esc="'{:.2f}%'.format(line['taux_realisation'])"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="text-left">TOTAL</td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['total_credit'])"/></td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['total_encaissement'])"/></td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['total_execution'])"/></td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['total_solde_theorique'])"/></td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['total_solde_reel'])"/></td>
+                                <td>-</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div style="margin-top: 30px; font-size: 9pt;">
+                        <p><strong>Légende:</strong></p>
+                        <ul>
+                            <li>Solde Théorique = Crédit annuel - Encaissement</li>
+                            <li>Solde Réel = Encaissement - Exécution</li>
+                            <li>Taux de réalisation = (Exécution ÷ Crédit annuel) × 100%</li>
+                        </ul>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

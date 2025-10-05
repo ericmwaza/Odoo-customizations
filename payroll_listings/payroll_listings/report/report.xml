@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- A3 Paper Format -->
+    <record id="paperformat_a3_landscape" model="report.paperformat">
+        <field name="name">A3 Landscape</field>
+        <field name="format">A3</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">15</field>
+        <field name="margin_bottom">15</field>
+        <field name="margin_left">15</field>
+        <field name="margin_right">15</field>
+        <field name="header_line">False</field>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+    <record id="action_xlsx_bank_listing" model="ir.actions.report">
+        <field name="name">Bank Listing (XLSX)</field>
+        <field name="model">payroll.listing.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">payroll_listings.xlsx_bank_listing</field>
+        <field name="report_file">payroll_listings.xlsx_bank_listing</field>
+        <field name="print_report_name">'Bank Listing - %s' % (object.company_id.name)</field>
+        <field name="binding_model_id" ref="model_payroll_listing_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_bank_listing_pdf" model="ir.actions.report">
+        <field name="name">Bank Listing (PDF)</field>
+        <field name="model">payroll.listing.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">payroll_listings.report_bank_listing_pdf_document</field>
+        <field name="report_file">payroll_listings.report_bank_listing_pdf</field>
+        <field name="print_report_name">'Bank Listing - %s' % (object.company_id.name)</field>
+        <field name="binding_model_id" ref="model_payroll_listing_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_xlsx_employee_structure" model="ir.actions.report">
+        <field name="name">Employee Structure (XLSX)</field>
+        <field name="model">payroll.listing.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">payroll_listings.xlsx_employee_structure</field>
+        <field name="report_file">payroll_listings.xlsx_employee_structure</field>
+        <field name="print_report_name">'Employee Structure - %s' % (object.company_id.name)</field>
+        <field name="binding_model_id" ref="model_payroll_listing_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_employee_structure_pdf" model="ir.actions.report">
+        <field name="name">Employee Structure (PDF)</field>
+        <field name="model">payroll.listing.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">payroll_listings.report_employee_structure_pdf_document</field>
+        <field name="report_file">payroll_listings.report_employee_structure_pdf</field>
+        <field name="print_report_name">'Employee Structure - %s' % (object.company_id.name)</field>
+        <field name="binding_model_id" ref="model_payroll_listing_wizard"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_a3_landscape"/>
+    </record>
+
+    <record id="action_xlsx_all_payslips" model="ir.actions.report">
+        <field name="name">All Payslips (XLSX)</field>
+        <field name="model">payroll.listing.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">payroll_listings.xlsx_employee_structure</field>
+        <field name="report_file">payroll_listings.xlsx_employee_structure</field>
+        <field name="print_report_name">'All Payslips - %s' % (object.company_id.name)</field>
+        <field name="binding_model_id" ref="model_payroll_listing_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_all_payslips_pdf" model="ir.actions.report">
+        <field name="name">All Payslips (PDF)</field>
+        <field name="model">payroll.listing.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">payroll_listings.report_employee_structure_pdf_document</field>
+        <field name="report_file">payroll_listings.report_employee_structure_pdf</field>
+        <field name="print_report_name">'All Payslips - %s' % (object.company_id.name)</field>
+        <field name="binding_model_id" ref="model_payroll_listing_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

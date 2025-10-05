@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Caisse Report Wizard Form -->
+    <record id="view_caisse_report_wizard_form" model="ir.ui.view">
+        <field name="name">caisse.report.wizard.form</field>
+        <field name="model">caisse.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Resume Caisse - Selection de Periode">
+                <group>
+                    <group>
+                        <field name="report_type" invisible="1"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print_report" string="Imprimer" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Resume Caisse Action -->
+    <record id="action_report_resume_wizard" model="ir.actions.act_window">
+        <field name="name">Resume Caisse</field>
+        <field name="res_model">caisse.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'resume'}</field>
+    </record>
+
+    <!-- Decaissements Action -->
+    <record id="action_report_decaissements_wizard" model="ir.actions.act_window">
+        <field name="name">Rapport Decaissements</field>
+        <field name="res_model">caisse.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'decaissements'}</field>
+    </record>
+
+</odoo>

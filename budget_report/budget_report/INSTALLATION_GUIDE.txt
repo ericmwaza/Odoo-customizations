@@ -1,0 +1,55 @@
+═══════════════════════════════════════════════════════════════════
+    MODULE BUDGET REPORT - GUIDE D'INSTALLATION RAPIDE
+═══════════════════════════════════════════════════════════════════
+
+ÉTAPE 1: COPIER LE MODULE
+--------------------------
+sudo cp -r /home/eric/Documents/budget_report /opt/odoo/addons/
+sudo chown -R odoo:odoo /opt/odoo/addons/budget_report
+
+ÉTAPE 2: REDÉMARRER ODOO
+-------------------------
+sudo systemctl restart odoo
+
+ÉTAPE 3: INSTALLER LE MODULE
+-----------------------------
+1. Ouvrir Odoo dans le navigateur
+2. Aller dans Apps
+3. Retirer le filtre "Apps" pour voir tous les modules
+4. Chercher "Budget Report"
+5. Cliquer sur "Installer"
+
+ÉTAPE 4: CONFIGURER LES COMPTES ANALYTIQUES
+--------------------------------------------
+1. Aller dans Paramètres → Comptabilité
+2. Descendre à "Configuration Rapport Budget"
+3. Sélectionner les comptes analytiques:
+   - Encaissement: comptes de recettes/ventes
+   - Exécution: comptes de dépenses/achats
+
+ÉTAPE 5: UTILISER LE MODULE
+----------------------------
+1. Aller dans Comptabilité → Rapports → Rapport Budget
+2. Remplir le formulaire:
+   - Budget: choisir le poste budgétaire
+   - Date début/fin: période à analyser
+   - Type: PDF ou Excel
+3. Cliquer sur "Générer"
+
+═══════════════════════════════════════════════════════════════════
+                    RÉSULTAT ATTENDU
+═══════════════════════════════════════════════════════════════════
+
+Le rapport affichera 7 colonnes:
+1. Rubriques budgétaires
+2. Crédit annuel accordé
+3. Encaissement
+4. Exécution
+5. Solde Théorique annuel à engager
+6. Solde Réel
+7. Taux de réalisation (%)
+
+Format PDF: A4 Paysage avec mise en forme professionnelle
+Format Excel: Fichier téléchargeable avec formules et totaux
+
+═══════════════════════════════════════════════════════════════════

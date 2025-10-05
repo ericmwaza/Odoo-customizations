@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Caisse Configuration Form View -->
+    <record id="view_caisse_config_form" model="ir.ui.view">
+        <field name="name">caisse.config.form</field>
+        <field name="model">caisse.config</field>
+        <field name="type">form</field>
+        <field name="priority">1</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <form string="Caisse Configuration">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_requests" type="object"
+                                class="oe_stat_button" icon="fa-list">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">View</span>
+                                <span class="o_stat_text">Requests</span>
+                            </div>
+                        </button>
+                        <button name="action_print_resume_caisse" type="object"
+                                class="oe_stat_button" icon="fa-print">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Resume</span>
+                                <span class="o_stat_text">Caisse</span>
+                            </div>
+                        </button>
+                        <button name="action_print_decaissements" type="object"
+                                class="oe_stat_button" icon="fa-money">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Rapport</span>
+                                <span class="o_stat_text">Decaissements</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            invisible="active"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Configuration Name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group name="basic_info" string="Basic Information">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                        <group name="balance_info" string="Current Status">
+                            <field name="current_balance" widget="monetary"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Journal &amp; Accounts" name="accounting">
+                            <group>
+                                <group string="Journals &amp; Accounts">
+                                    <field name="journal_id" required="1"/>
+                                    <field name="advance_account_id" required="1"/>
+                                    <field name="expense_account_id" required="1"/>
+                                    <field name="default_analytic_account_id"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Approval Limits" name="limits">
+                            <group>
+                                <group string="Approval Limits">
+                                    <field name="manager_approval_limit" widget="monetary"/>
+                                    <field name="cashier_disbursement_limit" widget="monetary"/>
+                                    <field name="daily_disbursement_limit" widget="monetary"/>
+                                </group>
+                                <group string="Workflow Settings">
+                                    <field name="require_manager_approval"/>
+                                    <field name="auto_create_accounting_entries"/>
+                                    <field name="settlement_days"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Caisse Configuration Tree View -->
+    <record id="view_caisse_config_tree" model="ir.ui.view">
+        <field name="name">caisse.config.tree</field>
+        <field name="model">caisse.config</field>
+        <field name="arch" type="xml">
+            <list string="Caisse Configurations">
+                <field name="name"/>
+                <field name="journal_id"/>
+                <field name="current_balance" widget="monetary"/>
+                <field name="manager_approval_limit" widget="monetary"/>
+                <field name="active"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Caisse Configuration Action -->
+    <record id="action_caisse_config" model="ir.actions.act_window">
+        <field name="name">Caisse Configuration</field>
+        <field name="res_model">caisse.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first caisse configuration
+            </p>
+            <p>
+                Configure your caisse settings including journals, accounts, and approval limits.
+            </p>
+        </field>
+    </record>
+
+</odoo>

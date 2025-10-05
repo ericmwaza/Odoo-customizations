@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_employee_structure_pdf_document">
+        <t t-call="web.html_container">
+            <meta charset="utf-8"/>
+            <t t-if="data_by_bank">
+                <!-- Check if this is a credit/retenue report with nested structure -->
+                <t t-set="is_credit_retenue" t-value="report_type_label and ('CRÉDITS' in report_type_label or 'RETENUES' in report_type_label)"/>
+                <t t-if="is_credit_retenue">
+                    <!-- Credit/Retenue reports: iterate banks, then retenue types -->
+                    <t t-foreach="data_by_bank.items()" t-as="bank_item">
+                        <t t-set="bank_name" t-value="bank_item[0]"/>
+                        <t t-set="bank_data" t-value="bank_item[1]"/>
+                        <t t-foreach="bank_data.get('retenues', {}).items()" t-as="retenue_item">
+                            <t t-set="retenue_name" t-value="retenue_item[0]"/>
+                            <t t-set="retenue_data" t-value="retenue_item[1]"/>
+                            <!-- Create bank_item format for template compatibility -->
+                            <t t-set="bank_item" t-value="(f'{bank_name} - {retenue_name}', retenue_data)"/>
+                            <t t-call="payroll_listings.report_employee_structure_pdf_content"/>
+                        </t>
+                    </t>
+                </t>
+                <t t-else="">
+                    <!-- Regular reports: use original structure -->
+                    <t t-foreach="data_by_bank.items()" t-as="bank_item">
+                        <t t-call="payroll_listings.report_employee_structure_pdf_content"/>
+                    </t>
+                </t>
+            </t>
+            <t t-else="">
+                <t t-call="payroll_listings.report_employee_structure_pdf_content"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_employee_structure_pdf_content">
+        <div class="page" style="padding: 15px 20px; margin: 0; font-family: 'Arial', sans-serif; font-size: 12px; line-height: 1.4; page-break-after: always;" charset="utf-8">
+            <!-- Header Section with Logo in TOP-LEFT -->
+            <div style="position: relative; margin-bottom: 20px;">
+                <t t-if="env.company and env.company.logo">
+                    <img t-att-src="image_data_uri(env.company.logo)" 
+                         style="position: absolute; top: 0; left: 0; max-height: 80px; max-width: 200px;"/>
+                </t>
+                <t t-else="">
+                    <div style="position: absolute; top: 0; left: 0; height: 80px; width: 200px; border: 2px solid #666; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold;">
+                        LOGO
+                    </div>
+                </t>
+                <!-- Add space to prevent content overlap -->
+                <div style="height: 100px;"></div>
+            </div>
+            
+            <!-- Title Section with French Date -->
+            <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #666; padding-bottom: 15px;">
+                <h1 style="margin: 0; font-size: 20px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+                    <t t-set="report_title" t-value="report_type_label or 'PAYROLL REPORT'"/>
+                    <t t-if="period and period.get('month_year')">
+                        <span t-esc="report_title"/> - <span t-esc="period.get('month_year')"/>
+                    </t>
+                    <t t-else="">
+                        <span t-esc="report_title"/>
+                    </t>
+                </h1>
+            </div>
+            
+            <!-- Bank Name Section -->
+            <!-- Only show bank header for non-salary listing reports and non-empty bank names -->
+            <t t-set="is_salary_listing" t-value="report_type_label and 'LISTE DE PAIE' in report_type_label"/>
+            <t t-if="bank_item and bank_item[0] and not is_salary_listing">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #666; padding-bottom: 10px; display: inline-block;">
+                        <span t-esc="bank_item[0]"/>
+                    </h2>
+                </div>
+            </t>
+
+            <t t-if="bank_item and rules">
+                <t t-set="bank_name" t-value="bank_item[0]"/>
+                <t t-set="bank_data" t-value="bank_item[1]"/>
+                <!-- Calculate columns: for credit/retenue/credit_interne reports it's 2 + rules, for others it's 3 + rules -->
+                <t t-if="report_type_label and ('CRÉDITS' in report_type_label or 'RETENUES' in report_type_label)">
+                    <t t-set="total_columns" t-value="2 + len(rules)"/>
+                </t>
+                <t t-else="">
+                    <t t-set="total_columns" t-value="3 + len(rules)"/>
+                </t>
+                <t t-set="table_width" t-value="100"/>
+                
+                <!-- Adaptive sizing based on column count -->
+                <t t-set="font_size" t-value="11 if total_columns &lt;= 8 else (9 if total_columns &lt;= 12 else 8)"/>
+                <t t-set="cell_padding" t-value="'8px' if total_columns &lt;= 8 else ('6px' if total_columns &lt;= 12 else '4px')"/>
+                <t t-set="header_padding" t-value="'12px 8px' if total_columns &lt;= 8 else ('10px 6px' if total_columns &lt;= 12 else '8px 4px')"/>
+                
+                <!-- Table for this bank -->
+                <table t-attf-style="border-collapse: collapse; width: {{table_width}}%; font-size: {{font_size}}px; margin: 30px auto 0 auto; border: 2px solid #666;">
+                    <thead>
+                        <!-- Column headers -->
+                        <tr style="background: #f5f5f5;">
+                            <th t-attf-style="border: 1px solid #666; padding: {{header_padding}}; text-align: center; font-weight: bold; font-size: {{font_size}}px;">NOM ET PRÉNOM</th>
+                            <th t-attf-style="border: 1px solid #666; padding: {{header_padding}}; text-align: center; font-weight: bold; font-size: {{font_size}}px;">MATRICULE</th>
+                            <!-- For credit/retenue/credit_interne, contribution reports, and salary listing reports, show only rule columns (no N° COMPTE), for others show N° COMPTE -->
+                            <t t-set="is_contribution_report" t-value="report_type_label and any(contrib in report_type_label.upper() for contrib in ['LISTING INSS', 'LISTING IPR', 'LISTING IRE', 'LISTING MUTUELLE', 'LISTING ONPR', 'LISTING SPECIAL CONTRIBUTION'])"/>
+                            <t t-set="is_salary_listing" t-value="report_type_label and 'LISTE DE PAIE' in report_type_label"/>
+                            <t t-if="not (report_type_label and ('CRÉDITS' in report_type_label or 'RETENUES' in report_type_label)) and not is_contribution_report and not is_salary_listing">
+                                <th t-attf-style="border: 1px solid #666; padding: {{header_padding}}; text-align: center; font-weight: bold; font-size: {{font_size}}px;">N° COMPTE</th>
+                            </t>
+                            <th t-foreach="rules" t-as="rule" t-attf-style="border: 1px solid #666; padding: {{header_padding}}; text-align: center; font-weight: bold; font-size: {{font_size}}px;">
+                                <span t-raw="rule.get('name')"/>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="bank_totals" t-value="{rule.get('code'): 0.0 for rule in rules}"/>
+                        <t t-foreach="bank_data.get('records', [])" t-as="row">
+                            <tr t-attf-style="background-color: {{'#fafafa' if row_index % 2 == 0 else '#ffffff'}};">
+                                <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; font-size: {{font_size}}px;"><span t-esc="row.get('employee_name') or ''"/></td>
+                                <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; text-align: center; font-size: {{font_size}}px;"><span t-esc="row.get('employee_matricule') or ''"/></td>
+                                <!-- Only show N° COMPTE for non-credit/retenue/credit_interne, non-contribution, and non-salary listing reports -->
+                                <t t-if="not (report_type_label and ('CRÉDITS' in report_type_label or 'RETENUES' in report_type_label)) and not is_contribution_report and not is_salary_listing">
+                                    <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; text-align: center; font-size: {{font_size}}px;"><span t-esc="row.get('bank_account') or ''"/></td>
+                                </t>
+                                <t t-foreach="rules" t-as="rule">
+                                    <!-- Handle different data sources for credit/retenue vs regular reports -->
+                                    <t t-if="report_type_label and ('CRÉDITS' in report_type_label or 'RETENUES' in report_type_label)">
+                                        <t t-if="rule.get('code') == 'DATE_DEBUT'">
+                                            <t t-set="value" t-value="row.get('date_debut', '')"/>
+                                        </t>
+                                        <t t-elif="rule.get('code') == 'DATE_FIN'">
+                                            <t t-set="value" t-value="row.get('date_fin', '')"/>
+                                        </t>
+                                        <t t-elif="rule.get('code') == 'MENSUALITE'">
+                                            <t t-set="value" t-value="row.get('mensualite', 0.0)"/>
+                                        </t>
+                                        <t t-elif="rule.get('code') == 'REFERENCE'">
+                                            <t t-set="value" t-value="row.get('reference', '')"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-set="value" t-value="0"/>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-set="value" t-value="row.get('amounts', {}).get(rule.get('code'), 0.0)"/>
+                                    </t>
+                                    
+                                    <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; text-align: right; font-size: {{font_size}}px; font-weight: 500;">
+                                        <t t-if="rule.get('code') in ['DATE_DEBUT', 'DATE_FIN', 'REFERENCE']">
+                                            <span t-esc="value"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="value" t-options='{"widget": "float", "precision": 2}'/>
+                                        </t>
+                                    </td>
+                                    
+                                    <!-- Update totals for numeric values only -->
+                                    <t t-if="rule.get('code') == 'MENSUALITE' or (rule.get('code') not in ['DATE_DEBUT', 'DATE_FIN', 'REFERENCE'])">
+                                        <t t-set="rule_code" t-value="rule.get('code')"/>
+                                        <t t-set="bank_totals" t-value="dict(bank_totals, **{rule_code: bank_totals[rule_code] + value})"/>
+                                    </t>
+                                </t>
+                            </tr>
+                        </t>
+                        <!-- Bank subtotal -->
+                        <tr style="background: #666; color: #fff;">
+                            <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; font-weight: bold;"></td>
+                            <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; font-weight: bold;"></td>
+                            <!-- Only show TOTAL label in the right place -->
+                            <t t-if="report_type_label and ('CRÉDITS' in report_type_label or 'RETENUES' in report_type_label)">
+                                <!-- For credit/retenue: employee count goes in first rule column, others are empty -->
+                                <t t-foreach="rules" t-as="rule">
+                                    <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; text-align: right; font-weight: bold; font-size: {{font_size}}px;">
+                                        <t t-if="rule.get('code') == 'MENSUALITE'">
+                                            <span t-esc="bank_totals[rule.get('code')]" t-options='{"widget": "float", "precision": 2}'/>
+                                        </t>
+                                        <t t-elif="rule_index == 0">
+                                            <span t-esc="len(bank_data.get('records', []))"/> Employés
+                                        </t>
+                                    </td>
+                                </t>
+                            </t>
+                            <t t-elif="is_contribution_report">
+                                <!-- For contribution reports: no N° COMPTE column, so show employee count in first rule column -->
+                                <t t-foreach="rules" t-as="rule">
+                                    <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; text-align: right; font-weight: bold; font-size: {{font_size}}px;">
+                                        <t t-if="rule_index == 0">
+                                            <span t-esc="len(bank_data.get('records', []))"/> Employés
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="bank_totals[rule.get('code')]" t-options='{"widget": "float", "precision": 2}'/>
+                                        </t>
+                                    </td>
+                                </t>
+                            </t>
+                            <t t-elif="is_salary_listing">
+                                <!-- For salary listing reports: no N° COMPTE column, so show employee count in first rule column -->
+                                <t t-foreach="rules" t-as="rule">
+                                    <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; text-align: right; font-weight: bold; font-size: {{font_size}}px;">
+                                        <t t-if="rule_index == 0">
+                                            <span t-esc="len(bank_data.get('records', []))"/> Employés
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="bank_totals[rule.get('code')]" t-options='{"widget": "float", "precision": 2}'/>
+                                        </t>
+                                    </td>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <!-- For regular reports: employee count in N° COMPTE column, amounts in rule columns -->
+                                <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; text-align: right; font-weight: bold; font-size: {{font_size}}px; text-transform: uppercase; letter-spacing: 0.5px;"><span t-esc="len(bank_data.get('records', []))"/> Employés</td>
+                                <t t-foreach="rules" t-as="rule">
+                                    <td t-attf-style="border: 1px solid #666; padding: {{cell_padding}}; text-align: right; font-weight: bold; font-size: {{font_size}}px;">
+                                        <span t-esc="bank_totals[rule.get('code')]" t-options='{"widget": "float", "precision": 2}'/>
+                                    </td>
+                                </t>
+                            </t>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+            <t t-else="">
+                <div style="text-align: center; margin-top: 100px; padding: 40px; border: 2px solid #666;">
+                    <p style="font-size: 18px; font-weight: bold; margin: 0;">AUCUNE DONNÉE DISPONIBLE POUR CE RAPPORT</p>
+                </div>
+            </t>
+        </div>
+    </template>
+
+</odoo>

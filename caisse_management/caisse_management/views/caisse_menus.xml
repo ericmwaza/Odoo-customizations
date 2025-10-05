@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu Principal Caisse -->
+    <menuitem id="menu_caisse_main"
+              name="Caisse"
+              sequence="30"
+              web_icon="caisse_management,static/description/icon.png"
+              groups="caisse_management.group_caisse_employee"/>
+
+    <!-- Tableaux de Bord -->
+    <menuitem id="menu_caisse_dashboards"
+              name="Tableaux de Bord"
+              parent="menu_caisse_main"
+              sequence="10"/>
+
+    <menuitem id="menu_caisse_dashboard_cashier"
+              name="Tableau de Bord Caissier"
+              parent="menu_caisse_dashboards"
+              action="action_caisse_dashboard_cashier_server"
+              sequence="10"
+              groups="caisse_management.group_caisse_cashier"/>
+
+    <menuitem id="menu_caisse_dashboard_manager"
+              name="Tableau de Bord Manager"
+              parent="menu_caisse_dashboards"
+              action="action_caisse_dashboard_manager_server"
+              sequence="20"
+              groups="caisse_management.group_caisse_manager"/>
+
+    <!-- Opérations -->
+    <menuitem id="menu_caisse_operations"
+              name="Opérations"
+              parent="menu_caisse_main"
+              sequence="20"/>
+
+    <menuitem id="menu_caisse_requests"
+              name="Demandes de Fonds"
+              parent="menu_caisse_operations"
+              action="action_caisse_request"
+              sequence="10"/>
+
+    <menuitem id="menu_caisse_requests_approve"
+              name="Demandes à Approuver"
+              parent="menu_caisse_operations"
+              action="action_caisse_request_manager"
+              sequence="15"
+              groups="caisse_management.group_caisse_manager"/>
+
+    <menuitem id="menu_caisse_requests_disburse"
+              name="Demandes à Décaisser"
+              parent="menu_caisse_operations"
+              action="action_caisse_request_cashier"
+              sequence="20"
+              groups="caisse_management.group_caisse_cashier"/>
+
+    <menuitem id="menu_caisse_disbursements"
+              name="Décaissements"
+              parent="menu_caisse_operations"
+              action="action_caisse_disbursement"
+              sequence="30"
+              groups="caisse_management.group_caisse_cashier"/>
+
+    <menuitem id="menu_caisse_reconciliation"
+              name="Réconciliations"
+              parent="menu_caisse_operations"
+              action="action_caisse_reconciliation"
+              sequence="40"
+              groups="caisse_management.group_caisse_cashier"/>
+
+    <!-- Rapports -->
+    <menuitem id="menu_caisse_reports"
+              name="Rapports"
+              parent="menu_caisse_main"
+              sequence="30"/>
+
+    <menuitem id="menu_report_resume_caisse"
+              name="Resume Caisse"
+              parent="menu_caisse_reports"
+              action="action_report_resume_wizard"
+              sequence="10"
+              groups="caisse_management.group_caisse_manager"/>
+
+
+    <!-- Configuration -->
+    <menuitem id="menu_caisse_configuration"
+              name="Configuration"
+              parent="menu_caisse_main"
+              sequence="90"
+              groups="caisse_management.group_caisse_admin"/>
+
+    <menuitem id="menu_caisse_config"
+              name="Configuration Caisse"
+              parent="menu_caisse_configuration"
+              action="action_caisse_config"
+              sequence="10"/>
+
+    <menuitem id="menu_caisse_request_type"
+              name="Types de Demande"
+              parent="menu_caisse_configuration"
+              action="action_caisse_request_type"
+              sequence="20"/>
+
+</odoo>

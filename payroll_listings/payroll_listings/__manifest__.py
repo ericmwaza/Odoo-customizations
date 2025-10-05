@@ -1,0 +1,30 @@
+{
+    'name': 'Payroll Listings',
+    'version': '18.0.1.0.0',
+    'summary': 'Advanced Payroll Listings and Reports',
+    'author': 'By Eric Mwaza (contact at ericmwaza@gmail.com)',
+    'website': 'https://www.example.com',
+    'license': 'AGPL-3',
+    'category': 'Human Resources/Payroll',
+    'depends': [
+        'hr_payroll',
+        'report_xlsx',
+    ],
+    'external_dependencies': {
+        'python': ['reportlab'],
+    },
+    'data': [
+        'security/groups.xml',
+        'security/ir.model.access.csv',
+        'views/employee_views.xml',
+        'views/listing_wizard_views.xml',
+        'views/contribution_bank_config_views.xml',
+        'data/ir_actions.xml',
+        'views/menu.xml',
+        'report/report.xml',
+        'report/pdf_bank_listing_templates.xml',
+        'report/pdf_employee_structure_templates.xml',
+    ],
+    'installable': True,
+    'application': True,
+}

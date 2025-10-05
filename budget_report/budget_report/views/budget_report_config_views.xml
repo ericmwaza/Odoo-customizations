@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add fields to Settings → Accounting -->
+    <record id="res_config_settings_view_form_inherit_budget_report" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.budget.report</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Budget Report" name="budget_report">
+                    <block title="Configuration Rapport Budget">
+                        <setting>
+                            <label for="budget_encaissement_plan_ids" string="Plans Analytiques Encaissement"/>
+                            <div class="text-muted">
+                                Sélectionnez les plans analytiques représentant les encaissements
+                            </div>
+                            <field name="budget_encaissement_plan_ids" widget="many2many_tags"/>
+                        </setting>
+                        <setting>
+                            <label for="budget_execution_plan_ids" string="Plans Analytiques Exécution"/>
+                            <div class="text-muted">
+                                Sélectionnez les plans analytiques représentant les exécutions (dépenses)
+                            </div>
+                            <field name="budget_execution_plan_ids" widget="many2many_tags"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

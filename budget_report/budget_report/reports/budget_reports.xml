@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PDF Report Definition -->
+    <record id="action_budget_report_pdf" model="ir.actions.report">
+        <field name="name">Rapport Budget PDF</field>
+        <field name="model">budget.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_report.budget_report_pdf_document</field>
+        <field name="report_file">budget_report.budget_report_pdf_document</field>
+        <field name="binding_model_id" ref="model_budget_report_wizard"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+</odoo>

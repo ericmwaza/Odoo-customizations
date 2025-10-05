@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_contribution_bank_config_tree" model="ir.ui.view">
+        <field name="name">contribution.bank.config.tree</field>
+        <field name="model">contribution.bank.config</field>
+        <field name="arch" type="xml">
+            <list string="Contribution Bank Configuration">
+                <field name="contribution_type"/>
+                <field name="bank_id"/>
+                <field name="bank_account"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_contribution_bank_config_form" model="ir.ui.view">
+        <field name="name">contribution.bank.config.form</field>
+        <field name="model">contribution.bank.config</field>
+        <field name="arch" type="xml">
+            <form string="Contribution Bank Configuration">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="contribution_type"/>
+                            <field name="bank_id"/>
+                        </group>
+                        <group>
+                            <field name="bank_account"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_contribution_bank_config" model="ir.actions.act_window">
+        <field name="name">Contribution Banks</field>
+        <field name="res_model">contribution.bank.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="help">Configure which banks to use for each employee category and contribution type.</field>
+    </record>
+
+</odoo>

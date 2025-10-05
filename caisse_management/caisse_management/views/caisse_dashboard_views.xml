@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Caisse Dashboard for Cashier -->
+    <record id="view_caisse_dashboard_cashier" model="ir.ui.view">
+        <field name="name">caisse.dashboard.cashier</field>
+        <field name="model">caisse.config</field>
+        <field name="type">form</field>
+        <field name="priority">1</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <form string="" create="false" edit="false" readonly="1" class="o_form_readonly o_form_nosheet">
+                <style>
+                    .o_form_readonly .o_cp_breadcrumbs { display: none !important; }
+                    .o_form_readonly .o_control_panel .breadcrumb { display: none !important; }
+                    .o_form_readonly .o_form_statusbar { display: none !important; }
+                    .o_control_panel { display: none !important; }
+                </style>
+                <div class="o_form_sheet_bg">
+                    <div style="max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 20px !important;">
+                    <div class="oe_title mb-3">
+                        <h1>Tableau de Bord Caissier</h1>
+                    </div>
+
+                    <!-- Cartes Soldes -->
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <h4 class="card-title text-primary">Solde Actuel</h4>
+                                    <h2 class="card-text">
+                                        <field name="current_balance" widget="monetary" readonly="1"/>
+                                    </h2>
+                                    <small class="text-muted">
+                                        <field name="journal_id" readonly="1" force_save="1"/>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <h4 class="card-title text-success">Disponible Aujourd'hui</h4>
+                                    <h2 class="card-text">
+                                        <field name="daily_available_balance" widget="monetary" readonly="1"/>
+                                    </h2>
+                                    <small class="text-muted">Solde disponible du jour</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <h4 class="card-title text-info">Limite Journalière</h4>
+                                    <h2 class="card-text">
+                                        <field name="daily_disbursement_limit" widget="monetary" readonly="1"
+                                               invisible="daily_disbursement_limit &lt;= 0"/>
+                                        <span invisible="daily_disbursement_limit &gt; 0" class="text-muted">Aucune limite</span>
+                                    </h2>
+                                    <small class="text-muted">Maximum par jour</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions Rapides -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h4>Actions Rapides</h4>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <button name="action_view_pending_requests" type="object" class="btn btn-warning w-100">
+                                <i class="fa fa-clock-o"/> Demandes en Attente
+                            </button>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <button name="action_view_pending_disbursements" type="object" class="btn btn-success w-100">
+                                <i class="fa fa-money"/> Décaisser Fonds
+                            </button>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <button name="action_create_reconciliation" type="object" class="btn btn-info w-100">
+                                <i class="fa fa-calculator"/> Nouvelle Réconciliation
+                            </button>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <button name="action_view_today_disbursements" type="object" class="btn btn-primary w-100">
+                                <i class="fa fa-list"/> Activité du Jour
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Graphiques et Statistiques -->
+                    <div class="row mt-4">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fa fa-bar-chart"/> Utilisation des Limites</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <div class="o_form_label">Solde vs Limite Journalière</div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="text-center p-2 border rounded">
+                                                        <small class="text-muted">Solde Actuel</small>
+                                                        <div class="h5 text-primary">
+                                                            <field name="current_balance" widget="monetary" readonly="1"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="text-center p-2 border rounded">
+                                                        <small class="text-muted">Disponible Aujourd'hui</small>
+                                                        <div class="h5 text-success">
+                                                            <field name="daily_available_balance" widget="monetary" readonly="1"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fa fa-pie-chart"/> Activité du Jour</h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <button name="action_view_today_disbursements" type="object" class="btn btn-link p-0 w-100">
+                                                <div class="border-end">
+                                                    <h3 class="text-success">
+                                                        <i class="fa fa-arrow-up"/>
+                                                        <field name="today_disbursed_count" readonly="1"/>
+                                                    </h3>
+                                                    <small class="text-muted">Demandes Traitées</small>
+                                                </div>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button name="action_view_pending_requests" type="object" class="btn btn-link p-0 w-100">
+                                                <h3 class="text-warning">
+                                                    <i class="fa fa-clock-o"/>
+                                                    <field name="today_pending_count" readonly="1"/>
+                                                </h3>
+                                                <small class="text-muted">En Attente</small>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations sur les Limites -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4>Limites Opérationnelles</h4>
+                        </div>
+                        <div class="col-xl-4 col-lg-6 col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="o_form_label">Limite Approbation Manager:</div>
+                                    <field name="manager_approval_limit" widget="monetary" readonly="1"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-6 col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="o_form_label">Limite Transaction Caissier:</div>
+                                    <field name="cashier_disbursement_limit" widget="monetary" readonly="1"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-6 col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="o_form_label">Période de Règlement:</div>
+                                    <span><field name="settlement_days" readonly="1"/> jours</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Caisse Dashboard for Manager -->
+    <record id="view_caisse_dashboard_manager" model="ir.ui.view">
+        <field name="name">caisse.dashboard.manager</field>
+        <field name="model">caisse.config</field>
+        <field name="type">form</field>
+        <field name="priority">1</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <form string="" create="false" edit="false" readonly="1" class="o_form_readonly o_form_nosheet">
+                <style>
+                    .o_form_readonly .o_cp_breadcrumbs { display: none !important; }
+                    .o_form_readonly .o_control_panel .breadcrumb { display: none !important; }
+                    .o_form_readonly .o_form_statusbar { display: none !important; }
+                    .o_control_panel { display: none !important; }
+                </style>
+                <div class="o_form_sheet_bg">
+                    <div style="max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 20px !important;">
+                    <div class="oe_title mb-3">
+                        <h1>Tableau de Bord Manager</h1>
+                    </div>
+
+                    <!-- Cartes de Résumé -->
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title text-warning">Approbations Pendantes</h5>
+                                    <h3 class="card-text">
+                                        <button name="action_view_requests_to_approve" type="object" class="btn btn-link p-0">
+                                            <field name="pending_approvals_count" readonly="1"/>
+                                        </button>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card border-danger">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title text-danger">Règlements en Retard</h5>
+                                    <h3 class="card-text">
+                                        <button name="action_view_overdue_settlements" type="object" class="btn btn-link p-0">
+                                            <field name="overdue_settlements_count" readonly="1"/>
+                                        </button>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title text-info">Solde Actuel</h5>
+                                    <h3 class="card-text">
+                                        <field name="current_balance" widget="monetary" readonly="1"/>
+                                    </h3>
+                                    <small class="text-muted">Journal Caisse</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title text-success">Disponible Aujourd'hui</h5>
+                                    <h3 class="card-text">
+                                        <field name="daily_available_balance" widget="monetary" readonly="1"/>
+                                    </h3>
+                                    <small class="text-muted">Avec limites appliquées</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions Rapides -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h4>Actions Rapides</h4>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <button name="action_view_requests_to_approve" type="object" class="btn btn-warning w-100">
+                                <i class="fa fa-check"/> Approuver Demandes
+                            </button>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <button name="action_view_all_requests" type="object" class="btn btn-info w-100">
+                                <i class="fa fa-list"/> Toutes les Demandes
+                            </button>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <button name="action_view_reconciliations" type="object" class="btn btn-success w-100">
+                                <i class="fa fa-calculator"/> Réconciliations
+                            </button>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <button name="action_view_reports" type="object" class="btn btn-primary w-100">
+                                <i class="fa fa-bar-chart"/> Rapports
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Graphiques de Gestion - Repositionnés à gauche -->
+                    <div class="row mt-4">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fa fa-line-chart"/> Tendances des 7 Derniers Jours</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-md-3">
+                                            <button name="action_view_all_requests" type="object" class="btn btn-link p-0 w-100">
+                                                <div class="mb-3">
+                                                    <div class="text-primary" style="font-size: 2rem;">
+                                                        <i class="fa fa-file-text-o"/>
+                                                    </div>
+                                                    <h4 class="text-primary">
+                                                        <field name="total_requests_7days" readonly="1"/>
+                                                    </h4>
+                                                    <small class="text-muted">Demandes Totales</small>
+                                                </div>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button name="action_view_approved_requests" type="object" class="btn btn-link p-0 w-100">
+                                                <div class="mb-3">
+                                                    <div class="text-success" style="font-size: 2rem;">
+                                                        <i class="fa fa-check-circle"/>
+                                                    </div>
+                                                    <h4 class="text-success">
+                                                        <field name="approved_requests_7days" readonly="1"/>
+                                                    </h4>
+                                                    <small class="text-muted">Approuvées</small>
+                                                </div>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button name="action_view_disbursed_requests" type="object" class="btn btn-link p-0 w-100">
+                                                <div class="mb-3">
+                                                    <div class="text-warning" style="font-size: 2rem;">
+                                                        <i class="fa fa-money"/>
+                                                    </div>
+                                                    <h4 class="text-warning">
+                                                        <field name="disbursed_requests_7days" readonly="1"/>
+                                                    </h4>
+                                                    <small class="text-muted">Décaissées</small>
+                                                </div>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button name="action_view_rejected_requests" type="object" class="btn btn-link p-0 w-100">
+                                                <div class="mb-3">
+                                                    <div class="text-danger" style="font-size: 2rem;">
+                                                        <i class="fa fa-times-circle"/>
+                                                    </div>
+                                                    <h4 class="text-danger">
+                                                        <field name="rejected_requests_7days" readonly="1"/>
+                                                    </h4>
+                                                    <small class="text-muted">Rejetées</small>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h6>Taux d'Approbation: <span class="badge bg-success"><field name="approval_rate" widget="float" readonly="1"/>%</span></h6>
+                                            <div class="row">
+                                                <div class="col-8">
+                                                    <div class="bg-success text-white text-center py-2 rounded">
+                                                        Approuvées: <field name="approval_rate" widget="float" readonly="1"/>%
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="bg-danger text-white text-center py-2 rounded">
+                                                        Rejetées: <field name="rejection_rate" widget="float" readonly="1"/>%
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fa fa-exclamation-triangle"/> Alertes</h5>
+                                </div>
+                                <div class="card-body">
+                                    <button name="action_view_near_due_settlements" type="object" class="btn btn-link p-0 w-100 mb-2">
+                                        <div class="alert alert-warning d-flex align-items-center mb-0">
+                                            <i class="fa fa-clock-o me-2"/>
+                                            <div>
+                                                <strong><field name="near_due_settlements_count" readonly="1"/></strong> règlements arrivent à échéance
+                                            </div>
+                                        </div>
+                                    </button>
+                                    <button name="action_view_overdue_settlements" type="object" class="btn btn-link p-0 w-100 mb-2">
+                                        <div class="alert alert-danger d-flex align-items-center mb-0">
+                                            <i class="fa fa-exclamation-circle me-2"/>
+                                            <div>
+                                                <strong><field name="overdue_settlements_count" readonly="1"/></strong> règlements en retard
+                                            </div>
+                                        </div>
+                                    </button>
+                                    <button name="action_view_pending_requests" type="object" class="btn btn-link p-0 w-100 mb-2">
+                                        <div class="alert alert-info d-flex align-items-center mb-0">
+                                            <i class="fa fa-info-circle me-2"/>
+                                            <div>
+                                                <strong><field name="pending_requests_count" readonly="1"/></strong> demandes en attente
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuration -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4>Configuration Système</h4>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                            <button name="action_open_configuration" type="object" class="btn btn-secondary w-100">
+                                <i class="fa fa-cogs"/> Paramètres Caisse
+                            </button>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 mb-2">
+                            <button name="action_view_audit_trail" type="object" class="btn btn-secondary w-100">
+                                <i class="fa fa-history"/> Piste d'Audit
+                            </button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Actions Tableau de Bord - Actions Serveur pour assurer l'existence de la config -->
+    <record id="action_caisse_dashboard_cashier_server" model="ir.actions.server">
+        <field name="name">Tableau de Bord Caissier</field>
+        <field name="model_id" ref="model_caisse_config"/>
+        <field name="state">code</field>
+        <field name="code">
+# Get or create default config
+config = model.get_default_config()
+if not config:
+    config = model._create_default_config()
+
+# Return action to open specific config record
+action = env.ref('caisse_management.action_caisse_dashboard_cashier_window').read()[0]
+action['res_id'] = config.id
+        </field>
+    </record>
+
+    <record id="action_caisse_dashboard_manager_server" model="ir.actions.server">
+        <field name="name">Tableau de Bord Manager</field>
+        <field name="model_id" ref="model_caisse_config"/>
+        <field name="state">code</field>
+        <field name="code">
+# Get or create default config
+config = model.get_default_config()
+if not config:
+    config = model._create_default_config()
+
+# Return action to open specific config record
+action = env.ref('caisse_management.action_caisse_dashboard_manager_window').read()[0]
+action['res_id'] = config.id
+        </field>
+    </record>
+
+    <!-- Actions Fenêtre pour affichage réel du tableau de bord -->
+    <record id="action_caisse_dashboard_cashier_window" model="ir.actions.act_window">
+        <field name="name">Tableau de Bord Caissier</field>
+        <field name="res_model">caisse.config</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_caisse_dashboard_cashier"/>
+        <field name="target">current</field>
+    </record>
+
+    <record id="action_caisse_dashboard_manager_window" model="ir.actions.act_window">
+        <field name="name">Tableau de Bord Manager</field>
+        <field name="res_model">caisse.config</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_caisse_dashboard_manager"/>
+        <field name="target">current</field>
+    </record>
+
+</odoo>

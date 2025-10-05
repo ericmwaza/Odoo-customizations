@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="group_payroll_listings_user" model="res.groups">
+            <field name="name">Payroll Listings User</field>
+            <field name="category_id" ref="base.module_category_human_resources_payroll"/>
+            <field name="implied_ids" eval="[(4, ref('hr_payroll.group_hr_payroll_user'))]"/>
+            <field name="comment">
+                Users with this group can access the Payroll Listings feature.
+                This group is automatically assigned to Payroll Users.
+            </field>
+        </record>
+    </data>
+</odoo>
