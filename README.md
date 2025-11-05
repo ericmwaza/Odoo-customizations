@@ -15,10 +15,10 @@ Each report was built with a focus on accuracy, usability, and integration with 
    Summarizes active employee or client contracts, renewal timelines, and related financial commitments.
 
 4. **Payroll Listings**  
-   Generates detailed payroll summaries per period, including allowances, deductions, and net pay breakdowns.
+   Custom reports for payroll in pdf and Excel. This project has around 40 reports created and can be customized per need.
 
 ## Technical Stack
-- Odoo 15/16 (depending on implementation)
+- Odoo 18 (depending on implementation)
 - Python
 - PostgreSQL
 - QWeb / XLSX report engine
